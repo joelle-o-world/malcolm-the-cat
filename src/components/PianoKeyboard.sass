@@ -1,0 +1,38 @@
+$w: 50px
+$b: 30px
+$h: 200px
+.PianoKeyboard
+
+  button
+    box-sizing: border-box
+
+    outline: none
+    transition: transform .1s
+    &:hover
+      transform: scale(1.1)
+    &:active
+      transform: scale(1)
+
+
+  .white-keys
+    button
+      width: $w
+      background-color: white
+      height: $h
+  .black-keys
+    position: absolute
+    z-index: 1
+    button
+      width: $b 
+      height: $h / 2
+      margin-left: $w - $b
+      background-color: black
+      color: white
+
+      &.Db
+        margin-left: $w - $b/2
+      &.Eb
+        margin-right: $w
+      &.Bb
+        margin-right: $w - $b/2
+
