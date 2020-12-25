@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {FunctionComponent} from 'react';
+import {FunctionComponent, useEffect} from 'react';
 
 import './PianoKeyboard.sass';
 
@@ -10,19 +10,43 @@ export const PianoKeyboard: FunctionComponent<{
   numberOfKeys?: number;
   octave?: number;
   hotKeys?: string[];
+  hotKeyOffset?: number
   onNote?: (e:{
     pitchNumber: number;
     p: number;
     pitchName: string;
   }) => void
-}> = ({numberOfKeys=92, octave=1, hotKeys=defaultHotKeys, onNote}) => {
+}> = ({numberOfKeys=15, octave=1, hotKeys=defaultHotKeys, hotKeyOffset=0, onNote}) => {
+
+
+  useEffect( () => {
+    const handleKeyDown = (e: any) => {
+      if(hotKeys.includes(e.key)) {
+        let index = hotKeys.indexOf(e.key)
+        if(index !== -1) {
+
+          let pitch = index + hotKeyOffset + octave * 12
+          let keyName = keyNames[index % 12]
+          if(onNote)
+            onNote({
+              p: pitch,
+              pitchNumber: pitch,
+              pitchName: keyName,
+            })
+        }
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [hotKeys, hotKeyOffset])
 
   const whiteNotes = []
   const blackNotes = []
   for(let i=0; i < numberOfKeys; ++i) {
     const keyName = keyNames[i % 12]
     const black = /[b#]$/.test(keyName)
-    const hotKey = hotKeys[i] || null
+    const hotKey = i >= hotKeyOffset ? (hotKeys[i - hotKeyOffset] || null) : null
     const pitch = octave * 12 + i
     const handlePress = () => {
       if(onNote)
